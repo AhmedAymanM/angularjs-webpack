@@ -6,7 +6,8 @@ var autoprefixer = require('autoprefixer');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-
+var ImageminPlugin = require('imagemin-webpack-plugin').default;
+var ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 /**
  * Env
  * Get npm lifecycle event to identify the environment
@@ -45,7 +46,7 @@ module.exports = function makeWebpackConfig() {
 
     // Output path from the view of the page
     // Uses webpack-dev-server in development
-    publicPath: isProd ? '/' : 'http://localhost:8080/',
+    publicPath: isProd ? '/' : 'http://localhost:3000/',
 
     // Filename for entry points
     // Only adds hash in build mode
@@ -80,7 +81,7 @@ module.exports = function makeWebpackConfig() {
 
   // Initialize module
   config.module = {
-    rules: [{
+    loaders: [{
       // JS LOADER
       // Reference: https://github.com/babel/babel-loader
       // Transpile .js files using babel-loader
@@ -89,25 +90,25 @@ module.exports = function makeWebpackConfig() {
       loader: 'babel-loader',
       exclude: /node_modules/
     }, {
-      // CSS LOADER
+      // CSS LOADER & SASS LOADER
       // Reference: https://github.com/webpack/css-loader
       // Allow loading css through js
       //
+      // Reference: https://github.com/webpack-contrib/sass-loader
+      // Loads a SASS/SCSS file and and compiles it to CSS.
+      //
       // Reference: https://github.com/postcss/postcss-loader
       // Postprocess your css with PostCSS plugins
-      test: /\.css$/,
+      test: /\.scss|\.css$/,
       // Reference: https://github.com/webpack/extract-text-webpack-plugin
       // Extract css files in production builds
       //
       // Reference: https://github.com/webpack/style-loader
       // Use style-loader in development.
 
-      loader: isTest ? 'null-loader' : ExtractTextPlugin.extract({
-        fallbackLoader: 'style-loader',
-        loader: [
-          {loader: 'css-loader', query: {sourceMap: true}},
-          {loader: 'postcss-loader'}
-        ],
+      use: isTest ? 'null-loader' : ExtractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: 'css-loader?sourceMap!sass-loader?sourceMap!postcss-loader'
       })
     }, {
       // ASSET LOADER
@@ -160,6 +161,14 @@ module.exports = function makeWebpackConfig() {
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
+    // new ExtractTextPlugin('[name].css'),
+    //
+    // Reference: https://github.com/jeffling/ng-annotate-webpack-plugin
+    // WebPack plugin that runs ng-annotate on your bundles
+    new ngAnnotatePlugin({
+        add: true,
+    }),
+
     new webpack.LoaderOptionsPlugin({
       test: /\.scss$/i,
       options: {
@@ -176,7 +185,7 @@ module.exports = function makeWebpackConfig() {
     // Render index.html
     config.plugins.push(
       new HtmlWebpackPlugin({
-        template: './src/public/index.html',
+        template: './src/app/index.html',
         inject: 'body'
       }),
 
@@ -190,9 +199,14 @@ module.exports = function makeWebpackConfig() {
   // Add build specific plugins
   if (isProd) {
     config.plugins.push(
+
+      // A plugin that compress all images in your project.
+      // Reference: http://github.com/Klathmon/imagemin-webpack-plugin
+      new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i }),
+
       // Reference: http://webpack.github.io/docs/list-of-plugins.html#noerrorsplugin
       // Only emit files when there are no errors
-      new webpack.NoErrorsPlugin(),
+      new webpack.NoEmitOnErrorsPlugin(),
 
       // Reference: http://webpack.github.io/docs/list-of-plugins.html#dedupeplugin
       // Dedupe modules in the output
@@ -202,10 +216,10 @@ module.exports = function makeWebpackConfig() {
       // Minify all javascript, switch loaders to minimizing mode
       new webpack.optimize.UglifyJsPlugin(),
 
-      // Copy assets from the public folder
+      // Copy assets from the assets folder
       // Reference: https://github.com/kevlened/copy-webpack-plugin
       new CopyWebpackPlugin([{
-        from: __dirname + '/src/public'
+        from: __dirname + '/src/assets'
       }])
     )
   }
@@ -216,8 +230,9 @@ module.exports = function makeWebpackConfig() {
    * Reference: http://webpack.github.io/docs/webpack-dev-server.html
    */
   config.devServer = {
-    contentBase: './src/public',
-    stats: 'minimal'
+    contentBase: './src/assets',
+    stats: 'minimal',
+    port: 3000
   };
 
   return config;

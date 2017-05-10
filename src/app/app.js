@@ -1,6 +1,15 @@
 import angular from 'angular';
 
-import '../style/app.css';
+import ngMaterial from 'angular-material';
+import ngAnimate from 'angular-animate';
+import ngAria from 'angular-aria';
+import ngSanitize from 'angular-sanitize';
+import ngCookies from 'angular-cookies';
+import ngMessages from 'angular-messages';
+import 'angular-ui-router';
+
+import './app.css';
+import './styles.scss';
 
 let app = () => {
   return {
@@ -18,7 +27,17 @@ class AppCtrl {
 
 const MODULE_NAME = 'app';
 
-angular.module(MODULE_NAME, [])
+angular.module(MODULE_NAME, [
+    /* Angular Modules */
+    'ngMaterial',
+    'ngAnimate',
+    'ngAria',
+    'ngSanitize',
+    'ngCookies',
+    'ngMessages',
+    /* 3rd Party Modules */
+    'ui.router'
+  ])
   .directive('app', app)
   .controller('AppCtrl', AppCtrl);
 
