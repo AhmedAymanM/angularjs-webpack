@@ -31,7 +31,8 @@ module.exports = function makeWebpackConfig() {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? void 0 : {
-    app: './src/app/app.js'
+    app: './src/app/app.js',
+    // vendor: ['angular']
   };
 
   /**
@@ -81,13 +82,13 @@ module.exports = function makeWebpackConfig() {
 
   // Initialize module
   config.module = {
-    loaders: [{
+    rules: [{
       // JS LOADER
       // Reference: https://github.com/babel/babel-loader
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      loader: 'babel-loader',
+      use: 'babel-loader',
       exclude: /node_modules/
     }, {
       // CSS LOADER & SASS LOADER
@@ -108,7 +109,21 @@ module.exports = function makeWebpackConfig() {
 
       use: isTest ? 'null-loader' : ExtractTextPlugin.extract({
         fallback: 'style-loader',
-        use: 'css-loader?sourceMap!sass-loader?sourceMap!postcss-loader'
+        use: [{
+            loader: 'css-loader',
+            query: {
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            query: {
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'sass-loader'
+          }]
       })
     }, {
       // ASSET LOADER
@@ -118,13 +133,13 @@ module.exports = function makeWebpackConfig() {
       // Pass along the updated reference to your code
       // You can add here any file extension you want to get copied to your output
       test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
-      loader: 'file-loader'
+      use: 'file-loader'
     }, {
       // HTML LOADER
       // Reference: https://github.com/webpack/raw-loader
       // Allow loading html through js
       test: /\.html$/,
-      loader: 'raw-loader'
+      use: 'raw-loader'
     }]
   };
 
@@ -140,10 +155,14 @@ module.exports = function makeWebpackConfig() {
         /node_modules/,
         /\.spec\.js$/
       ],
-      loader: 'istanbul-instrumenter-loader',
-      query: {
-        esModules: true
-      }
+      use: [
+        {
+          loader: 'istanbul-instrumenter-loader',
+          options: {
+            esModules: true
+          }
+        }
+      ]
     })
   }
 
@@ -176,7 +195,12 @@ module.exports = function makeWebpackConfig() {
           plugins: [autoprefixer]
         }
       }
-    })
+    }),
+    //
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: /* chunkName= */"chunk",
+    //   filename: "chunk.bundle.js"
+    // })
   ];
 
   // Skip rendering index.html in test mode
