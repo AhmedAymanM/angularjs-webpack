@@ -31,7 +31,7 @@ module.exports = function makeWebpackConfig() {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? void 0 : {
-    app: './src/app/app.js',
+    app: './src/index.js',
     // vendor: ['angular']
   };
 
@@ -47,7 +47,7 @@ module.exports = function makeWebpackConfig() {
 
     // Output path from the view of the page
     // Uses webpack-dev-server in development
-    publicPath: isProd ? '/' : 'http://localhost:3000/',
+    publicPath: isProd ? '/' : 'http://localhost:8080/',
 
     // Filename for entry points
     // Only adds hash in build mode
@@ -209,7 +209,7 @@ module.exports = function makeWebpackConfig() {
     // Render index.html
     config.plugins.push(
       new HtmlWebpackPlugin({
-        template: './src/app/index.html',
+        template: './src/index.html',
         inject: 'body'
       }),
 
@@ -232,10 +232,6 @@ module.exports = function makeWebpackConfig() {
       // Only emit files when there are no errors
       new webpack.NoEmitOnErrorsPlugin(),
 
-      // Reference: http://webpack.github.io/docs/list-of-plugins.html#dedupeplugin
-      // Dedupe modules in the output
-      new webpack.optimize.DedupePlugin(),
-
       // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
       // Minify all javascript, switch loaders to minimizing mode
       new webpack.optimize.UglifyJsPlugin(),
@@ -255,8 +251,7 @@ module.exports = function makeWebpackConfig() {
    */
   config.devServer = {
     contentBase: './src/assets',
-    stats: 'minimal',
-    port: 3000
+    stats: 'minimal'
   };
 
   return config;

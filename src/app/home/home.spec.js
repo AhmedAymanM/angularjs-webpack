@@ -1,15 +1,15 @@
-import app from './app';
+import home from './home.module';
 
-describe('app', () => {
+describe('home', () => {
 
-  describe('AppCtrl', () => {
+  describe('HomeController', () => {
     let ctrl;
 
     beforeEach(() => {
-      angular.mock.module(app);
+      angular.mock.module(home);
 
       angular.mock.inject(($controller) => {
-        ctrl = $controller('AppCtrl', {});
+        ctrl = $controller('HomeController', {});
       });
     });
 
