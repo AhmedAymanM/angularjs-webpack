@@ -2,20 +2,10 @@ import angular from 'angular';
 import uirouter from '@uirouter/angularjs';
 
 import HomeController from './home.controller';
-
+import HomeRoute from './home.route'
 import './home.scss';
 
 export default angular.module('app.home', [uirouter])
-  .config(homeRoute)
+  .config(HomeRoute)
   .controller('HomeController', HomeController)
   .name;
-
-  function homeRoute ($stateProvider) {
-    $stateProvider
-      .state('home', {
-        url: '/',
-        template: require('./home.template.html'),
-        controller: 'HomeController',
-        controllerAs: 'ctrl'
-      });
-  }

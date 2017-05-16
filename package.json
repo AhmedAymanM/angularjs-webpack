@@ -4,7 +4,7 @@
   "description": "A workflow for Angular made with Webpack",
   "scripts": {
     "build": "rimraf dist && webpack --bail --progress --profile",
-    "server": "webpack-dev-server --history-api-fallback --inline --progress",
+    "server": "webpack-dev-server --history-api-fallback --hot --inline --progress",
     "test": "karma start",
     "test-watch": "karma start --auto-watch --no-single-run",
     "start": "npm run server"
@@ -30,6 +30,7 @@
     "angular-sanitize": "^1.6.4"
   },
   "devDependencies": {
+    "angular-hot-loader": "^0.9.3",
     "angular-mocks": "^1.6.4",
     "autoprefixer": "^7.0.1",
     "babel-core": "^6.24.1",

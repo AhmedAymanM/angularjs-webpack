@@ -32,7 +32,7 @@ module.exports = function makeWebpackConfig() {
    */
   config.entry = isTest ? void 0 : {
     app: './src/index.js',
-    // vendor: ['angular']
+    vendor: ['angular','@uirouter/angularjs']
   };
 
   /**
@@ -88,7 +88,10 @@ module.exports = function makeWebpackConfig() {
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      use: 'babel-loader',
+      use:  [
+              'angular-hot-loader',
+              'babel-loader'
+            ],
       exclude: /node_modules/
     }, {
       // CSS LOADER & SASS LOADER
@@ -180,6 +183,10 @@ module.exports = function makeWebpackConfig() {
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
+
+    // prints more readable module names in the browser console on HMR updates
+    new webpack.NamedModulesPlugin(),
+
     // new ExtractTextPlugin('[name].css'),
     //
     // Reference: https://github.com/jeffling/ng-annotate-webpack-plugin
@@ -197,10 +204,10 @@ module.exports = function makeWebpackConfig() {
       }
     }),
     //
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: /* chunkName= */"chunk",
-    //   filename: "chunk.bundle.js"
-    // })
+    new webpack.optimize.CommonsChunkPlugin({
+      name: /* chunkName= */"vendor",
+      filename: "vendor.bundle.js"
+    })
   ];
 
   // Skip rendering index.html in test mode
@@ -251,7 +258,8 @@ module.exports = function makeWebpackConfig() {
    */
   config.devServer = {
     contentBase: './src/assets',
-    stats: 'minimal'
+    stats: 'minimal',
+    publicPath: '/'
   };
 
   return config;
